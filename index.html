@@ -258,7 +258,7 @@
       <strong>Screenshot</strong> &rarr; clipboard &rarr; paste anywhere
     </div>
     <div class="cta-row">
-      <a class="cta" href="https://github.com/Sridhar1030/SnapFade/releases/latest">Download</a>
+      <a class="cta" href="https://github.com/Sridhar1030/SnapFade/releases/latest">Download <span class="cta-size" id="ver"></span></a>
       <a class="star" href="https://github.com/Sridhar1030/SnapFade">
         <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.7.8-4.9 4.6 1.3 6.6L12 17.3 6 20.6l1.3-6.6L2.4 9.4l6.7-.8z"/></svg>
         Star on GitHub
@@ -385,6 +385,17 @@
     ], { duration: 500, easing: 'ease-in' });
     root.classList.add('done');
   })();
+
+  // Point Download at the newest APK asset; falls back to the releases page if the API is unreachable.
+  fetch('https://api.github.com/repos/Sridhar1030/SnapFade/releases/latest')
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(rel => {
+      const apk = rel.assets.find(a => a.name.endsWith('.apk'));
+      if (!apk) return;
+      document.querySelector('.cta').href = apk.browser_download_url;
+      document.getElementById('ver').textContent = `${rel.tag_name} · ${Math.round(apk.size / 1024)} KB`;
+    })
+    .catch(() => {});
 
   function toggleTheme() {
     const root = document.documentElement;
